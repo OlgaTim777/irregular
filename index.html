@@ -59,7 +59,7 @@
     
     @keyframes snowfall-game {
       0% { transform: translateY(-10px) translateX(0) rotate(0deg); opacity: 0.8; }
-      100% { transform: translateY(100vh) translateX(50px) rotate(360deg); opacity: 0.3; }
+      100% { transform: translateY(calc(100% + 120px)) translateX(50px) rotate(360deg); opacity: 0.3; }
     }
     
     .snowflake {
@@ -127,6 +127,8 @@
     // Create snowflakes
     function createSnowflakes() {
       const container = document.getElementById('snowflakes-container');
+      if (!container) return;
+      
       for (let i = 0; i < 30; i++) {
         const snowflake = document.createElement('div');
         snowflake.className = 'snowflake';
@@ -376,6 +378,8 @@
       const pastCard = document.querySelector(`[data-past-index="${selectedPastForm}"]`);
       const participleCard = document.querySelector(`[data-participle-index="${selectedParticiple}"]`);
       
+      if (!infCard || !pastCard || !participleCard) return;
+      
       const infData = vocabularyData[selectedInfinitive];
       
       // Check if all three indices match and the verb is correct
@@ -453,6 +457,8 @@
       const pastCard = document.querySelector(`[data-past-index="${randomIndex}"]`);
       const participleCard = document.querySelector(`[data-participle-index="${randomIndex}"]`);
       
+      if (!infCard || !pastCard || !participleCard) return;
+      
       infCard.classList.add('hint-glow');
       pastCard.classList.add('hint-glow');
       participleCard.classList.add('hint-glow');
@@ -480,7 +486,11 @@
         clearInterval(timerInterval);
         timerInterval = null;
       }
-      render(window.elementSdk.config);
+      if (window.elementSdk) {
+        render(window.elementSdk.config);
+      } else {
+        render(defaultConfig);
+      }
     }
 
     function startTimer(duration) {
@@ -513,13 +523,17 @@
           timerElement.style.color = '#d32f2f';
         } else if (timeRemaining <= 60) {
           timerElement.style.color = '#f57c00';
+        } else {
+          timerElement.style.color = '#fff';
         }
       }
     }
 
     function showTimeoutScreen() {
-      const config = window.elementSdk.config;
+      const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
       const app = document.getElementById('app');
+      if (!app) return;
+      
       const customFont = config.font_family || defaultConfig.font_family;
       const baseSize = config.font_size || defaultConfig.font_size;
       const baseFontStack = 'system-ui, -apple-system, sans-serif';
@@ -536,7 +550,10 @@
         </div>
       `;
       
-      document.getElementById('play-again-btn').onclick = resetGame;
+      const playAgainBtn = document.getElementById('play-again-btn');
+      if (playAgainBtn) {
+        playAgainBtn.onclick = resetGame;
+      }
     }
 
     function showCompletion() {
@@ -548,8 +565,10 @@
       // Play victory fanfare
       playVictorySound();
       
-      const config = window.elementSdk.config;
+      const config = window.elementSdk ? window.elementSdk.config : defaultConfig;
       const app = document.getElementById('app');
+      if (!app) return;
+      
       const customFont = config.font_family || defaultConfig.font_family;
       const baseSize = config.font_size || defaultConfig.font_size;
       const baseFontStack = 'system-ui, -apple-system, sans-serif';
@@ -635,7 +654,7 @@
         <style>
           @keyframes snowfall {
             0% { transform: translateY(-10px) rotate(0deg); opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0.5; }
+            100% { transform: translateY(calc(100% + 100px)) rotate(360deg); opacity: 0.5; }
           }
           
           @keyframes openChest {
@@ -665,11 +684,16 @@
         </style>
       `;
       
-      document.getElementById('play-again-btn').onclick = resetGame;
+      const playAgainBtn = document.getElementById('play-again-btn');
+      if (playAgainBtn) {
+        playAgainBtn.onclick = resetGame;
+      }
     }
 
     function render(config) {
       const app = document.getElementById('app');
+      if (!app) return;
+      
       const customFont = config.font_family || defaultConfig.font_family;
       const baseSize = config.font_size || defaultConfig.font_size;
       const baseFontStack = 'system-ui, -apple-system, sans-serif';
@@ -687,7 +711,7 @@
               <div id="timer-display" style="font-family: ${customFont}, ${baseFontStack}; font-size: ${baseSize * 2}px; font-weight: 700; color: #fff; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); min-width: 100px;">5:00</div>
             </div>
             <div style="display: flex; align-items: center; gap: 8px;">
-              <label style="font-family: ${customFont}, ${baseFontStack}; font-size: ${baseSize * 0.875}px; color: #fff; font-weight: 600;">⚙️ Set Timer (seconds):</label>
+              <label for="timer-input" style="font-family: ${customFont}, ${baseFontStack}; font-size: ${baseSize * 0.875}px; color: #fff; font-weight: 600;">⚙️ Set Timer (seconds):</label>
               <input type="number" id="timer-input" min="30" max="1800" value="${config.timer_duration || defaultConfig.timer_duration}" style="font-family: ${customFont}, ${baseFontStack}; width: 80px; padding: 6px 12px; border-radius: 8px; border: 2px solid #fff; font-size: ${baseSize * 0.875}px; font-weight: 600;">
               <button id="update-timer-btn" style="font-family: ${customFont}, ${baseFontStack}; font-size: ${baseSize * 0.75}px; background: #fff; color: #d32f2f; padding: 6px 16px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; transition: all 0.2s;">Apply</button>
             </div>
@@ -772,20 +796,31 @@
         card.onclick = () => selectCard('participle', originalIndex, card);
       });
       
-      document.getElementById('hint-btn').onclick = showHint;
-      document.getElementById('reset-btn').onclick = resetGame;
+      const hintBtn = document.getElementById('hint-btn');
+      if (hintBtn) hintBtn.onclick = showHint;
+      
+      const resetBtn = document.getElementById('reset-btn');
+      if (resetBtn) resetBtn.onclick = resetGame;
       
       // Timer update functionality
-      document.getElementById('update-timer-btn').onclick = () => {
-        const newDuration = parseInt(document.getElementById('timer-input').value);
-        if (newDuration >= 30 && newDuration <= 1800) {
-          if (timerInterval) {
-            clearInterval(timerInterval);
+      const updateTimerBtn = document.getElementById('update-timer-btn');
+      if (updateTimerBtn) {
+        updateTimerBtn.onclick = () => {
+          const timerInput = document.getElementById('timer-input');
+          if (timerInput) {
+            const newDuration = parseInt(timerInput.value);
+            if (newDuration >= 30 && newDuration <= 1800) {
+              if (timerInterval) {
+                clearInterval(timerInterval);
+              }
+              if (window.elementSdk) {
+                window.elementSdk.setConfig({ timer_duration: newDuration });
+              }
+              startTimer(newDuration);
+            }
           }
-          window.elementSdk.setConfig({ timer_duration: newDuration });
-          startTimer(newDuration);
-        }
-      };
+        };
+      }
       
       // Start timer
       const timerDuration = config.timer_duration || defaultConfig.timer_duration;
@@ -796,117 +831,100 @@
       const correctVerbCount = vocabularyData.filter(v => v.correctPast).length;
       if (matchedPairs.size === correctVerbCount) {
         const app = document.getElementById('app');
+        if (!app) return;
+        
         const customFont = config.font_family || defaultConfig.font_family;
         const baseSize = config.font_size || defaultConfig.font_size;
         const baseFontStack = 'system-ui, -apple-system, sans-serif';
         
-        const completionContainer = app.querySelector('.text-center');
-        if (completionContainer) {
-          completionContainer.style.background = config.card_background || defaultConfig.card_background;
-          
-          const emoji = completionContainer.querySelector('div');
-          emoji.style.fontSize = `${baseSize * 4}px`;
-          
-          const title = completionContainer.querySelector('h2');
-          title.style.fontFamily = `${customFont}, ${baseFontStack}`;
-          title.style.fontSize = `${baseSize * 2}px`;
-          title.style.color = config.text_color || defaultConfig.text_color;
-          title.textContent = config.completion_message || defaultConfig.completion_message;
-          
-          const scoreDiv = completionContainer.querySelectorAll('div')[1];
-          scoreDiv.style.fontFamily = `${customFont}, ${baseFontStack}`;
-          scoreDiv.style.fontSize = `${baseSize * 1.5}px`;
-          scoreDiv.style.color = config.primary_action_color || defaultConfig.primary_action_color;
-          
-          const paragraphs = completionContainer.querySelectorAll('p');
-          paragraphs.forEach(p => {
-            p.style.fontFamily = `${customFont}, ${baseFontStack}`;
-            p.style.color = config.text_color || defaultConfig.text_color;
-          });
-          
-          const button = completionContainer.querySelector('button');
-          button.style.fontFamily = `${customFont}, ${baseFontStack}`;
-          button.style.fontSize = `${baseSize}px`;
-          button.style.background = config.primary_action_color || defaultConfig.primary_action_color;
+        const completionTitle = app.querySelector('h2');
+        if (completionTitle) {
+          completionTitle.style.fontFamily = `${customFont}, ${baseFontStack}`;
+          completionTitle.style.fontSize = `${baseSize * 3}px`;
+          completionTitle.textContent = config.completion_message || defaultConfig.completion_message;
         }
         
         const wrapper = app.querySelector('.min-h-full');
         if (wrapper) {
-          wrapper.style.background = config.background_color || defaultConfig.background_color;
+          wrapper.style.background = `linear-gradient(180deg, ${config.background_color || defaultConfig.background_color} 0%, #2c5f7f 100%)`;
         }
       } else {
         render(config);
       }
     }
 
-    window.elementSdk.init({
-      defaultConfig,
-      onConfigChange,
-      mapToCapabilities: (config) => ({
-        recolorables: [
-          {
-            get: () => config.background_color || defaultConfig.background_color,
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities: (config) => ({
+          recolorables: [
+            {
+              get: () => config.background_color || defaultConfig.background_color,
+              set: (value) => {
+                config.background_color = value;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            },
+            {
+              get: () => config.card_background || defaultConfig.card_background,
+              set: (value) => {
+                config.card_background = value;
+                window.elementSdk.setConfig({ card_background: value });
+              }
+            },
+            {
+              get: () => config.text_color || defaultConfig.text_color,
+              set: (value) => {
+                config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            },
+            {
+              get: () => config.primary_action_color || defaultConfig.primary_action_color,
+              set: (value) => {
+                config.primary_action_color = value;
+                window.elementSdk.setConfig({ primary_action_color: value });
+              }
+            },
+            {
+              get: () => config.term_color || defaultConfig.term_color,
+              set: (value) => {
+                config.term_color = value;
+                window.elementSdk.setConfig({ term_color: value });
+              }
+            }
+          ],
+          borderables: [],
+          fontEditable: {
+            get: () => config.font_family || defaultConfig.font_family,
             set: (value) => {
-              config.background_color = value;
-              window.elementSdk.setConfig({ background_color: value });
+              config.font_family = value;
+              window.elementSdk.setConfig({ font_family: value });
             }
           },
-          {
-            get: () => config.card_background || defaultConfig.card_background,
+          fontSizeable: {
+            get: () => config.font_size || defaultConfig.font_size,
             set: (value) => {
-              config.card_background = value;
-              window.elementSdk.setConfig({ card_background: value });
-            }
-          },
-          {
-            get: () => config.text_color || defaultConfig.text_color,
-            set: (value) => {
-              config.text_color = value;
-              window.elementSdk.setConfig({ text_color: value });
-            }
-          },
-          {
-            get: () => config.primary_action_color || defaultConfig.primary_action_color,
-            set: (value) => {
-              config.primary_action_color = value;
-              window.elementSdk.setConfig({ primary_action_color: value });
-            }
-          },
-          {
-            get: () => config.term_color || defaultConfig.term_color,
-            set: (value) => {
-              config.term_color = value;
-              window.elementSdk.setConfig({ term_color: value });
+              config.font_size = value;
+              window.elementSdk.setConfig({ font_size: value });
             }
           }
-        ],
-        borderables: [],
-        fontEditable: {
-          get: () => config.font_family || defaultConfig.font_family,
-          set: (value) => {
-            config.font_family = value;
-            window.elementSdk.setConfig({ font_family: value });
-          }
-        },
-        fontSizeable: {
-          get: () => config.font_size || defaultConfig.font_size,
-          set: (value) => {
-            config.font_size = value;
-            window.elementSdk.setConfig({ font_size: value });
-          }
-        }
-      }),
-      mapToEditPanelValues: (config) => new Map([
-        ['game_title', config.game_title || defaultConfig.game_title],
-        ['instructions_text', config.instructions_text || defaultConfig.instructions_text],
-        ['hint_button_text', config.hint_button_text || defaultConfig.hint_button_text],
-        ['reset_button_text', config.reset_button_text || defaultConfig.reset_button_text],
-        ['completion_message', config.completion_message || defaultConfig.completion_message],
-        ['timer_duration', String(config.timer_duration || defaultConfig.timer_duration)]
-      ])
-    });
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['game_title', config.game_title || defaultConfig.game_title],
+          ['instructions_text', config.instructions_text || defaultConfig.instructions_text],
+          ['hint_button_text', config.hint_button_text || defaultConfig.hint_button_text],
+          ['reset_button_text', config.reset_button_text || defaultConfig.reset_button_text],
+          ['completion_message', config.completion_message || defaultConfig.completion_message],
+          ['timer_duration', String(config.timer_duration || defaultConfig.timer_duration)]
+        ])
+      });
 
-    render(window.elementSdk.config);
+      render(window.elementSdk.config);
+    } else {
+      render(defaultConfig);
+    }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b2a75e7a3a9f78c',t:'MTc2NjUyMDE4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b2a97914200f78c',t:'MTc2NjUyMTU2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
