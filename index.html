@@ -132,7 +132,7 @@
       for (let i = 0; i < 30; i++) {
         const snowflake = document.createElement('div');
         snowflake.className = 'snowflake';
-        snowflake.textContent = '❄️';
+        snowflake.textContent = '❄��';
         snowflake.style.left = Math.random() * 100 + '%';
         snowflake.style.animationDuration = (Math.random() * 3 + 2) + 's';
         snowflake.style.animationDelay = Math.random() * 2 + 's';
@@ -145,6 +145,7 @@
   <script>
     const defaultConfig = {
       background_color: "#4d7c9f",
+      background_image: "https://i.imgur.com/xYJIXGn.png", // код игры - вставьте сюда URL картинки для фона (например: "https://example.com/winter-bg.jpg")
       card_background: "#ffffff",
       term_color: "#d32f2f",
       definition_color: "#1976d2",
@@ -538,8 +539,12 @@
       const baseSize = config.font_size || defaultConfig.font_size;
       const baseFontStack = 'system-ui, -apple-system, sans-serif';
       
+      const backgroundStyle = (config.background_image || defaultConfig.background_image) 
+        ? `background: linear-gradient(180deg, rgba(77, 124, 159, 0.1) 0%, rgba(44, 95, 127, 0.1) 100%), url('${config.background_image || defaultConfig.background_image}') center/cover no-repeat;`
+        : `background: linear-gradient(180deg, #4d7c9f 0%, #2c5f7f 100%);`;
+      
       app.innerHTML = `
-        <div class="min-h-full flex items-center justify-center p-8" style="background: linear-gradient(180deg, #4d7c9f 0%, #2c5f7f 100%);">
+        <div class="min-h-full flex items-center justify-center p-8" style="${backgroundStyle}">
           <div class="text-center max-w-2xl" style="background: #ffffff; border-radius: 24px; padding: 64px 48px; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
             <div style="font-size: ${baseSize * 4}px; margin-bottom: 24px;">⏰</div>
             <h2 style="font-family: ${customFont}, ${baseFontStack}; font-size: ${baseSize * 2}px; font-weight: 700; color: ${config.text_color || defaultConfig.text_color}; margin-bottom: 16px;">Time's Up!</h2>
@@ -573,8 +578,12 @@
       const baseSize = config.font_size || defaultConfig.font_size;
       const baseFontStack = 'system-ui, -apple-system, sans-serif';
       
+      const backgroundStyle = (config.background_image || defaultConfig.background_image) 
+        ? `background: linear-gradient(180deg, rgba(77, 124, 159, 0.1) 0%, rgba(44, 95, 127, 0.1) 100%), url('${config.background_image || defaultConfig.background_image}') center/cover no-repeat;`
+        : `background: linear-gradient(180deg, #4d7c9f 0%, #2c5f7f 100%);`;
+      
       app.innerHTML = `
-        <div class="min-h-full flex items-center justify-center p-8" style="background: linear-gradient(180deg, #4d7c9f 0%, #2c5f7f 100%); position: relative; overflow: hidden;">
+        <div class="min-h-full flex items-center justify-center p-8" style="${backgroundStyle} position: relative; overflow: hidden;">
           <!-- Snowflakes background -->
           <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
             ${Array.from({length: 30}, (_, i) => `
@@ -702,8 +711,12 @@
       const shuffledPastForms = shuffleArray(vocabularyData.map((item, index) => ({ ...item, originalIndex: index })));
       const shuffledParticiples = shuffleArray(vocabularyData.map((item, index) => ({ ...item, originalIndex: index })));
       
+      const backgroundStyle = (config.background_image || defaultConfig.background_image) 
+        ? `background: linear-gradient(180deg, rgba(77, 124, 159, 0.3) 0%, rgba(44, 95, 127, 0.3) 100%), url('${config.background_image || defaultConfig.background_image}') center/cover no-repeat;`
+        : `background: linear-gradient(180deg, ${config.background_color || defaultConfig.background_color} 0%, #2c5f7f 100%);`;
+      
       app.innerHTML = `
-        <div class="min-h-full w-full" style="background: linear-gradient(180deg, ${config.background_color || defaultConfig.background_color} 0%, #2c5f7f 100%); padding: 0;">
+        <div class="min-h-full w-full" style="${backgroundStyle} padding: 0;">
           <!-- Timer Bar -->
           <div style="background: linear-gradient(135deg, #d32f2f 0%, #b71c1c 100%); padding: 16px 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
             <div style="display: flex; align-items: center; gap: 16px;">
@@ -756,7 +769,7 @@
               </div>
               
               <div>
-                <h2 style="font-family: ${customFont}, ${baseFontStack}; font-size: ${baseSize * 1.25}px; font-weight: 600; color: ${config.definition_color || defaultConfig.definition_color}; margin-bottom: 16px; text-align: center;">⏮️ Past Simple</h2>
+                <h2 style="font-family: ${customFont}, ${baseFontStack}; font-size: ${baseSize * 1.25}px; font-weight: 600; color: ${config.definition_color || defaultConfig.definition_color}; margin-bottom: 16px; text-align: center;">��️ Past Simple</h2>
                 <div class="space-y-3">
                   ${shuffledPastForms.map(item => `
                     <div data-past-index="${item.originalIndex}" class="past-card" style="background: ${config.card_background || defaultConfig.card_background}; padding: 20px 14px; border-radius: 12px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 3px solid ${config.definition_color || defaultConfig.definition_color}; display: flex; align-items: center; justify-content: center; min-height: 54px;">
@@ -846,7 +859,11 @@
         
         const wrapper = app.querySelector('.min-h-full');
         if (wrapper) {
-          wrapper.style.background = `linear-gradient(180deg, ${config.background_color || defaultConfig.background_color} 0%, #2c5f7f 100%)`;
+          if (config.background_image || defaultConfig.background_image) {
+            wrapper.style.background = `linear-gradient(180deg, rgba(77, 124, 159, 0.1) 0%, rgba(44, 95, 127, 0.1) 100%), url('${config.background_image || defaultConfig.background_image}') center/cover no-repeat`;
+          } else {
+            wrapper.style.background = `linear-gradient(180deg, ${config.background_color || defaultConfig.background_color} 0%, #2c5f7f 100%)`;
+          }
         }
       } else {
         render(config);
@@ -917,7 +934,8 @@
           ['hint_button_text', config.hint_button_text || defaultConfig.hint_button_text],
           ['reset_button_text', config.reset_button_text || defaultConfig.reset_button_text],
           ['completion_message', config.completion_message || defaultConfig.completion_message],
-          ['timer_duration', String(config.timer_duration || defaultConfig.timer_duration)]
+          ['timer_duration', String(config.timer_duration || defaultConfig.timer_duration)],
+          ['background_image', config.background_image || defaultConfig.background_image]
         ])
       });
 
@@ -926,5 +944,5 @@
       render(defaultConfig);
     }
   </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b2a97914200f78c',t:'MTc2NjUyMTU2Ny4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9b2df7886429f78c',t:'MTc2NjU1Njk1NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
